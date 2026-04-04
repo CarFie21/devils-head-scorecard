@@ -1,0 +1,19 @@
+<!-- thank-you.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thanks</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width:700px; margin:80px auto; padding:0 18px; text-align:center; color:#111; }
+    a { color:#0066cc; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <h1>Thanks — submission received</h1>
+  <p>Your scorecard was submitted successfully. If you need to submit another, <a href="/index.html">return to the form</a>.</p>
+  <p class="note">If you were redirected here from FormSubmit, confirm the verification email sent to <strong>cfields091215@gmail.com</strong> if you haven't already.</p>
+</body>
+</html>
