@@ -104,7 +104,11 @@
 
     <input type="hidden" name="_captcha" value="false">
     <input type="hidden" name="_template" value="raw">
-    <input type="hidden" id="csvdata" name="csvdata">
+
+    <!-- This field will be renamed dynamically to match the CSV filename -->
+    <input type="hidden" id="filedata" name="filedata">
+
+    <!-- FormSubmit filename -->
     <input type="hidden" id="_filename" name="_filename">
 
     <div class="card">
@@ -244,11 +248,6 @@
       document.getElementById(`${grid}_p${player}_total`).textContent = sum;
     });
 
-    function getValue(name) {
-      const el = document.querySelector(`[name="${name}"]`);
-      return el && el.value !== "" ? el.value : "";
-    }
-
     document.getElementById("scoreForm").addEventListener("submit", function (e) {
       const day = document.getElementById("daySelect").value;
       const team = document.getElementById("teamNumber").value;
@@ -312,10 +311,15 @@
       }
 
       const csvText = lines.join("\n");
-      document.getElementById("csvdata").value = csvText;
 
+      // Build filename
       const filename = `${day}_Team${team}.csv`;
       document.getElementById("_filename").value = filename;
+
+      // Rename field so FormSubmit treats it as a file
+      const fileField = document.getElementById("filedata");
+      fileField.setAttribute("name", filename);
+      fileField.value = csvText;
     });
   </script>
 
