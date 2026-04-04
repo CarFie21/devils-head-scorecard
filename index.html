@@ -289,7 +289,7 @@
       return lines.join("\n");
     }
 
-    document.getElementById("scoreForm").addEventListener("submit", function (e) {
+    document.getElementById("scoreForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
       const day = document.getElementById("daySelect").value;
@@ -303,8 +303,31 @@
       const csvText = buildSingleCSV(day, team);
       const filename = `${day}Team${team}.csv`;
 
-      console.log("CSV Output:\n", csvText);
-      alert("Single CSV generated successfully! Ready for Cloudflare upload.");
+      const payload = {
+        day,
+        team,
+        filename,
+        csv: csvText
+      };
+
+      try {
+        const response = await fetch("https://hook.us2.make.com/rlnohhnoz8b06qiqrgyc718kx1kxxfbv", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          alert("Scorecard sent to Make.com!");
+        } else {
+          alert("Make.com returned an error. Check scenario logs.");
+        }
+      } catch (err) {
+        alert("Network error sending to Make.com.");
+        console.error(err);
+      }
     });
   </script>
 
