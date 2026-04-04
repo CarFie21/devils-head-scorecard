@@ -1,335 +1,196 @@
-<!DOCTYPE html>
+<!-- index.html -->
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Devils Head Scorecard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 0;
-      padding: 1rem;
-      background: #f5f5f5;
-    }
-
-    h1, h2 {
-      margin: 0.5rem 0;
-      text-align: center;
-    }
-
-    .card {
-      background: #ffffff;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-    }
-
-    select,
-    input[type="number"] {
-      width: 100%;
-      padding: 0.4rem;
-      font-size: 1rem;
-      box-sizing: border-box;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-
-    .grid-wrapper {
-      overflow-x: auto;
-      margin-top: 0.5rem;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      min-width: 600px;
-      font-size: 0.85rem;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      text-align: center;
-      padding: 0.25rem;
-    }
-
-    th {
-      background: #f0f0f0;
-      font-weight: 600;
-    }
-
-    .hole-input {
-      width: 3rem;
-      padding: 0.2rem;
-      font-size: 0.85rem;
-      box-sizing: border-box;
-    }
-
-    .total-cell {
-      font-weight: bold;
-      background: #fafafa;
-    }
-
-    .submit-row {
-      text-align: center;
-      margin-top: 1rem;
-    }
-
-    button {
-      padding: 0.6rem 1.2rem;
-      font-size: 1rem;
-      border-radius: 4px;
-      border: none;
-      background: #0078d4;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
+    body { font-family: Arial, Helvetica, sans-serif; max-width:900px; margin:28px auto; padding:0 18px; color:#111; }
+    h1 { margin-bottom:8px; }
+    label { display:block; margin-top:12px; font-weight:600; }
+    input[type="text"], textarea, select { width:100%; padding:8px; margin-top:6px; box-sizing:border-box; font-size:14px; }
+    .row { display:flex; gap:12px; }
+    .col { flex:1; }
+    .small { max-width:220px; }
+    button { margin-top:14px; padding:10px 14px; font-size:16px; cursor:pointer; }
+    .hidden { display:none !important; height:0; overflow:hidden; }
+    .note { font-size:13px; color:#555; margin-top:8px; }
+    pre.sample { background:#f7f7f7; padding:10px; border-radius:4px; font-size:13px; white-space:pre-wrap; }
   </style>
 </head>
 <body>
-
   <h1>Devils Head Scorecard</h1>
 
-  <form id="scoreForm">
+  <!-- FormSubmit action uses the email you provided -->
+  <form id="scoreForm" action="https://formsubmit.co/cfields091215@gmail.com" method="POST" autocomplete="off">
+    <!-- FormSubmit hidden fields -->
+    <input type="hidden" name="_subject" value="New Scorecard Submission">
+    <input type="hidden" name="_captcha" value="false">
+    <!-- Redirect after submit; change to your actual page if desired -->
+    <input type="hidden" name="_next" value="https://your-github-pages-site.github.io/thank-you.html">
 
-    <div class="card">
-      <label for="daySelect">Day</label>
-      <select id="daySelect" required>
-        <option value="">Select Day</option>
-        <option value="Friday">Friday</option>
-        <option value="Saturday">Saturday</option>
+    <!-- Honeypot anti-spam -->
+    <div class="hidden" aria-hidden="true">
+      <label>Leave this empty<input name="_honey" autocomplete="off"></label>
+    </div>
+
+    <!-- Basic metadata -->
+    <div class="row">
+      <div class="col small">
+        <label>Day
+          <input name="day" type="text" id="day" required value="Friday">
+        </label>
+      </div>
+      <div class="col small">
+        <label>Team
+          <input name="team" type="text" id="team" required value="3">
+        </label>
+      </div>
+      <div class="col">
+        <label>Filename
+          <input name="filename" type="text" id="filename" required value="FridayTeam3.csv">
+        </label>
+      </div>
+    </div>
+
+    <p class="note">Enter each game's rows as comma-separated values. Leave blank rows where needed. Defaults match your previous CSV layout.</p>
+
+    <!-- Game 1 -->
+    <label>Game 1 (single row of 9 scores)
+      <input name="game1" id="game1" type="text" placeholder="e.g. 5,5,5,5,5,5,5,5,5" value="5,5,5,5,5,5,5,5,5">
+    </label>
+
+    <!-- Spacer blank rows count for Game1 -->
+    <label>Blank rows after Game 1
+      <select id="g1Blanks">
+        <option value="2">2 blank rows</option>
+        <option value="1">1 blank row</option>
+        <option value="0">0 blank rows</option>
       </select>
-    </div>
+    </label>
 
-    <div class="card">
-      <label for="teamNumber">Team Number</label>
-      <select id="teamNumber" required>
-        <option value="">Select Team</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
+    <!-- Game 2: multiple labeled rows A-D -->
+    <label>Game 2 - Row A (e.g., A,1,2,3,4,5,6,7,8,9)
+      <input name="g2a" id="g2a" type="text" placeholder="A,1,2,3,4,5,6,7,8,9" value="A,1,2,3,4,5,6,7,8,9">
+    </label>
+    <label>Game 2 - Row B (leave blank if none)
+      <input name="g2b" id="g2b" type="text" placeholder="B,,,,,,,," value="B,,,,,,,,">
+    </label>
+    <label>Game 2 - Row C (leave blank if none)
+      <input name="g2c" id="g2c" type="text" placeholder="C,,,,,,,," value="C,,,,,,,,">
+    </label>
+    <label>Game 2 - Row D (leave blank if none)
+      <input name="g2d" id="g2d" type="text" placeholder="D,,,,,,,," value="D,,,,,,,,">
+    </label>
+
+    <!-- Spacer blank rows count for Game2 -->
+    <label>Blank rows after Game 2
+      <select id="g2Blanks">
+        <option value="2">2 blank rows</option>
+        <option value="1">1 blank row</option>
+        <option value="0">0 blank rows</option>
       </select>
-    </div>
+    </label>
 
-    <div id="grids"></div>
+    <!-- Game 3 -->
+    <label>Game 3 (single row of 9 scores)
+      <input name="game3" id="game3" type="text" placeholder="e.g. 9,8,7,6,5,4,3,2,1" value="9,8,7,6,5,4,3,2,1">
+    </label>
 
-    <div class="submit-row">
-      <button type="submit">Submit</button>
-    </div>
+    <!-- Final blank rows -->
+    <label>Trailing blank rows
+      <select id="trailingBlanks">
+        <option value="2">2 blank rows</option>
+        <option value="1">1 blank row</option>
+        <option value="0">0 blank rows</option>
+      </select>
+    </label>
 
+    <!-- Hidden CSV field that will be posted -->
+    <label class="hidden">CSV<textarea id="csvField" name="csv" rows="8"></textarea></label>
+
+    <button type="submit">Submit Scorecard</button>
   </form>
 
+  <h3>Sample CSV this form produces</h3>
+  <pre class="sample" id="sampleCsv"></pre>
+
   <script>
-    function generateGrid(title, gridId) {
-      return `
-      <div class="card">
-        <h2>${title}</h2>
-        <div class="grid-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th></th>
-                <th>H1</th><th>H2</th><th>H3</th><th>H4</th><th>H5</th>
-                <th>H6</th><th>H7</th><th>H8</th><th>H9</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${[1,2,3,4].map(p => `
-                <tr>
-                  <td></td>
-                  ${[1,2,3,4,5,6,7,8,9].map(h => `
-                    <td>
-                      <input class="hole-input score-input"
-                             data-grid="${gridId}"
-                             data-player="${p}"
-                             data-hole="${h}"
-                             type="number">
-                    </td>
-                  `).join("")}
-                  <td class="total-cell" id="${gridId}_p${p}_total">0</td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
-        </div>
-      </div>`;
+    // Build CSV string from form inputs to match your previous layout
+    function buildCsv() {
+      const day = document.getElementById('day').value || '';
+      const team = document.getElementById('team').value || '';
+      const filename = document.getElementById('filename').value || '';
+
+      const g1 = (document.getElementById('game1').value || '').trim();
+      const g1Blanks = parseInt(document.getElementById('g1Blanks').value, 10);
+
+      const g2a = (document.getElementById('g2a').value || '').trim();
+      const g2b = (document.getElementById('g2b').value || '').trim();
+      const g2c = (document.getElementById('g2c').value || '').trim();
+      const g2d = (document.getElementById('g2d').value || '').trim();
+      const g2Blanks = parseInt(document.getElementById('g2Blanks').value, 10);
+
+      const g3 = (document.getElementById('game3').value || '').trim();
+      const trailingBlanks = parseInt(document.getElementById('trailingBlanks').value, 10);
+
+      // Helper to add blank lines
+      function blanks(n) { return Array(n).fill('').join('\n'); }
+
+      // Build the CSV exactly in the structure you used before
+      const parts = [];
+      parts.push(`${day} Team ${team}`); // top line like "Friday Team 3"
+      parts.push(''); // blank line to match earlier top spacing
+
+      // Game1
+      parts.push('Game1');
+      parts.push(g1);
+      if (g1Blanks > 0) parts.push(blanks(g1Blanks));
+
+      // Game2
+      parts.push('Game2');
+      if (g2a) parts.push(g2a);
+      if (g2b) parts.push(g2b);
+      if (g2c) parts.push(g2c);
+      if (g2d) parts.push(g2d);
+      if (g2Blanks > 0) parts.push(blanks(g2Blanks));
+
+      // Game3
+      parts.push('Game3');
+      parts.push(g3);
+      if (trailingBlanks > 0) parts.push(blanks(trailingBlanks));
+
+      // Join with single newlines; ensure final newline
+      let csv = parts.join('\n') + '\n';
+      return csv;
     }
 
-    function generateGridGame2(title, gridId) {
-      const labels = ["A", "B", "C", "D"];
-
-      return `
-      <div class="card">
-        <h2>${title}</h2>
-        <div class="grid-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Player</th>
-                <th>H10</th><th>H11</th><th>H12</th><th>H13</th><th>H14</th>
-                <th>H15</th><th>H16</th><th>H17</th><th>H18</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${labels.map((label, index) => `
-                <tr>
-                  <td>${label}</td>
-                  ${[10,11,12,13,14,15,16,17,18].map(h => `
-                    <td>
-                      <input class="hole-input score-input"
-                             data-grid="${gridId}"
-                             data-player="${index+1}"
-                             data-hole="${h}"
-                             type="number">
-                    </td>
-                  `).join("")}
-                  <td class="total-cell" id="${gridId}_p${index+1}_total">0</td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
-        </div>
-      </div>`;
+    // Populate CSV field and sample preview on load and before submit
+    function refreshPreview() {
+      const csv = buildCsv();
+      document.getElementById('csvField').value = csv;
+      document.getElementById('sampleCsv').textContent = csv;
     }
 
-    document.getElementById("grids").innerHTML =
-      generateGrid("Game 1", "g1") +
-      generateGridGame2("Game 2", "g2") +
-      generateGrid("Game 3", "g3");
-
-    document.addEventListener("input", function (e) {
-      if (!e.target.classList.contains("score-input")) return;
-
-      const grid = e.target.dataset.grid;
-      const player = e.target.dataset.player;
-
-      let sum = 0;
-      for (let h = 1; h <= 18; h++) {
-        const cell = document.querySelector(
-          `[data-grid="${grid}"][data-player="${player}"][data-hole="${h}"]`
-        );
-        if (cell && cell.value !== "" && !isNaN(cell.value)) {
-          sum += Number(cell.value);
-        }
-      }
-
-      document.getElementById(`${grid}_p${player}_total`).textContent = sum;
+    document.addEventListener('DOMContentLoaded', () => {
+      refreshPreview();
+      // Rebuild preview when inputs change
+      const inputs = document.querySelectorAll('#scoreForm input, #scoreForm select');
+      inputs.forEach(i => i.addEventListener('input', refreshPreview));
     });
 
-    function buildSingleCSV(day, team) {
-
-      const lines = [];
-
-      lines.push(`${day} Team ${team}`);
-      lines.push("");
-
-      // GAME 1
-      lines.push("Game1");
-      for (let p = 1; p <= 4; p++) {
-        const row = [];
-        for (let h = 1; h <= 9; h++) {
-          const input = document.querySelector(
-            `[data-grid="g1"][data-player="${p}"][data-hole="${h}"]`
-          );
-          row.push(input?.value || "");
-        }
-        lines.push(row.join(","));
-      }
-
-      lines.push("");
-
-      // GAME 2
-      lines.push("Game2");
-      const labels = ["A", "B", "C", "D"];
-      for (let p = 1; p <= 4; p++) {
-        const row = [labels[p - 1]];
-        for (let h = 10; h <= 18; h++) {
-          const input = document.querySelector(
-            `[data-grid="g2"][data-player="${p}"][data-hole="${h}"]`
-          );
-          row.push(input?.value || "");
-        }
-        lines.push(row.join(","));
-      }
-
-      lines.push("");
-
-      // GAME 3
-      lines.push("Game3");
-      for (let p = 1; p <= 4; p++) {
-        const row = [];
-        for (let h = 1; h <= 9; h++) {
-          const input = document.querySelector(
-            `[data-grid="g3"][data-player="${p}"][data-hole="${h}"]`
-          );
-          row.push(input?.value || "");
-        }
-        lines.push(row.join(","));
-      }
-
-      return lines.join("\n");
-    }
-
-    document.getElementById("scoreForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-
-      const day = document.getElementById("daySelect").value;
-      const team = document.getElementById("teamNumber").value;
-
-      if (!day || !team) {
-        alert("Please select Day and Team Number.");
+    // Ensure CSV is rebuilt just before submit
+    document.getElementById('scoreForm').addEventListener('submit', (e) => {
+      // Honeypot check: if filled, stop submission
+      const honey = document.querySelector('input[name="_honey"]').value;
+      if (honey && honey.trim() !== '') {
+        e.preventDefault();
         return;
       }
-
-      const csvText = buildSingleCSV(day, team);
-      const filename = `${day}Team${team}.csv`;
-
-      const payload = {
-        day,
-        team,
-        filename,
-        csv: csvText
-      };
-
-      try {
-        const response = await fetch("https://hook.us2.make.com/rlnohhnoz8b06qiqrgyc718kx1kxxfbv", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (response.ok) {
-          alert("Scorecard sent to Make.com!");
-        } else {
-          alert("Make.com returned an error. Check scenario logs.");
-        }
-      } catch (err) {
-        alert("Network error sending to Make.com.");
-        console.error(err);
-      }
+      document.getElementById('csvField').value = buildCsv();
+      // Let the form submit normally to FormSubmit.co
     });
   </script>
-
 </body>
 </html>
