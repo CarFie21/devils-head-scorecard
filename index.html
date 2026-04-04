@@ -312,11 +312,13 @@
 
       const csvText = lines.join("\n");
 
-      // Build filename
-      const filename = `${day}_Team${team}.csv`;
+      // Build filename (Option C: no special characters)
+      const filename = `${day}Team${team}.csv`;
+
+      // Set FormSubmit filename
       document.getElementById("_filename").value = filename;
 
-      // Rename field so FormSubmit treats it as a file
+      // Rename the hidden field so FormSubmit treats it as a file
       const fileField = document.getElementById("filedata");
       fileField.setAttribute("name", filename);
       fileField.value = csvText;
