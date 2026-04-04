@@ -100,20 +100,11 @@
 
   <h1>Devils Head Scorecard</h1>
 
-  <form id="scoreForm" action="https://formsubmit.co/cfields091215@gmail.com" method="POST">
-
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_template" value="raw">
-
-    <!-- This field will be renamed dynamically to match the CSV filename -->
-    <input type="hidden" id="filedata" name="filedata">
-
-    <!-- FormSubmit filename -->
-    <input type="hidden" id="_filename" name="_filename">
+  <form id="scoreForm">
 
     <div class="card">
       <label for="daySelect">Day</label>
-      <select id="daySelect" name="daySelect" required>
+      <select id="daySelect" required>
         <option value="">Select Day</option>
         <option value="Friday">Friday</option>
         <option value="Saturday">Saturday</option>
@@ -122,7 +113,7 @@
 
     <div class="card">
       <label for="teamNumber">Team Number</label>
-      <select id="teamNumber" name="teamNumber" required>
+      <select id="teamNumber" required>
         <option value="">Select Team</option>
         <option value="1">1</option>
         <option value="2">2</option>
@@ -224,10 +215,7 @@
       generateGrid("Game 1", "g1") +
       generateGridGame2("Game 2", "g2") +
       generateGrid("Game 3", "g3");
-  </script>
 
-  <!-- ⭐ ALL SCRIPT MOVED TO BOTTOM (Option A) ⭐ -->
-  <script>
     document.addEventListener("input", function (e) {
       if (!e.target.classList.contains("score-input")) return;
 
@@ -247,13 +235,14 @@
       document.getElementById(`${grid}_p${player}_total`).textContent = sum;
     });
 
-    document.getElementById("scoreForm").addEventListener("submit", function (e) {
+    document.getElementById("scoreForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
       const day = document.getElementById("daySelect").value;
       const team = document.getElementById("teamNumber").value;
 
       if (!day || !team) {
         alert("Please select Day and Team Number.");
-        e.preventDefault();
         return;
       }
 
@@ -310,17 +299,39 @@
       }
 
       const csvText = lines.join("\n");
-
-      // Build filename (Option C)
       const filename = `${day}Team${team}.csv`;
 
-      // Set FormSubmit filename
-      document.getElementById("_filename").value = filename;
+      // Build Web3Forms payload
+      const payload = {
+        access_key: "d156e237-1c4f-4681-b04a-276f650bb962",
+        subject: `Scorecard Submission: ${day} Team ${team}`,
+        from_name: "Devils Head Scorecard",
+        csv_filename: filename,
+        csv_content: csvText,
+        attachments: [
+          {
+            filename: filename,
+            content: btoa(csvText),
+            type: "text/csv"
+          }
+        ]
+      };
 
-      // Rename the hidden field so FormSubmit treats it as a file
-      const fileField = document.getElementById("filedata");
-      fileField.setAttribute("name", filename);
-      fileField.value = csvText;
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("Scorecard submitted successfully!");
+      } else {
+        alert("Submission failed. Please try again.");
+      }
     });
   </script>
 
