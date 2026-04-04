@@ -235,13 +235,15 @@
       document.getElementById(`${grid}_p${player}_total`).textContent = sum;
     });
 
-    function buildGameCSVs(day, team) {
+    function buildSingleCSV(day, team) {
+
+      const lines = [];
+
+      lines.push(`${day} Team ${team}`);
+      lines.push("");
 
       // GAME 1
-      const g1 = [];
-      g1.push(`${day} Team ${team}`);
-      g1.push("Game1");
-
+      lines.push("Game1");
       for (let p = 1; p <= 4; p++) {
         const row = [];
         for (let h = 1; h <= 9; h++) {
@@ -250,18 +252,14 @@
           );
           row.push(input?.value || "");
         }
-        g1.push(row.join(","));
+        lines.push(row.join(","));
       }
 
-      const csvGame1 = g1.join("\n");
+      lines.push("");
 
       // GAME 2
-      const g2 = [];
-      g2.push(`${day} Team ${team}`);
-      g2.push("Game2");
-
+      lines.push("Game2");
       const labels = ["A", "B", "C", "D"];
-
       for (let p = 1; p <= 4; p++) {
         const row = [labels[p - 1]];
         for (let h = 10; h <= 18; h++) {
@@ -270,16 +268,13 @@
           );
           row.push(input?.value || "");
         }
-        g2.push(row.join(","));
+        lines.push(row.join(","));
       }
 
-      const csvGame2 = g2.join("\n");
+      lines.push("");
 
       // GAME 3
-      const g3 = [];
-      g3.push(`${day} Team ${team}`);
-      g3.push("Game3");
-
+      lines.push("Game3");
       for (let p = 1; p <= 4; p++) {
         const row = [];
         for (let h = 1; h <= 9; h++) {
@@ -288,16 +283,10 @@
           );
           row.push(input?.value || "");
         }
-        g3.push(row.join(","));
+        lines.push(row.join(","));
       }
 
-      const csvGame3 = g3.join("\n");
-
-      return {
-        game1: csvGame1,
-        game2: csvGame2,
-        game3: csvGame3
-      };
+      return lines.join("\n");
     }
 
     document.getElementById("scoreForm").addEventListener("submit", function (e) {
@@ -311,13 +300,11 @@
         return;
       }
 
-      const csvs = buildGameCSVs(day, team);
+      const csvText = buildSingleCSV(day, team);
+      const filename = `${day}Team${team}.csv`;
 
-      console.log("Game 1 CSV:\n", csvs.game1);
-      console.log("Game 2 CSV:\n", csvs.game2);
-      console.log("Game 3 CSV:\n", csvs.game3);
-
-      alert("Three CSVs generated successfully! Cloudflare upload coming next.");
+      console.log("CSV Output:\n", csvText);
+      alert("Single CSV generated successfully! Ready for Cloudflare upload.");
     });
   </script>
 
