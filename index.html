@@ -137,90 +137,7 @@
       </select>
     </div>
 
-    <script>
-      function generateGrid(title, gridId) {
-        return `
-        <div class="card">
-          <h2>${title}</h2>
-          <div class="grid-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>H1</th><th>H2</th><th>H3</th><th>H4</th><th>H5</th>
-                  <th>H6</th><th>H7</th><th>H8</th><th>H9</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${[1,2,3,4].map(p => `
-                  <tr>
-                    <td></td>
-                    ${[1,2,3,4,5,6,7,8,9].map(h => `
-                      <td>
-                        <input class="hole-input score-input"
-                               data-grid="${gridId}"
-                               data-player="${p}"
-                               data-hole="${h}"
-                               type="number">
-                      </td>
-                    `).join("")}
-                    <td class="total-cell" id="${gridId}_p${p}_total">0</td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          </div>
-        </div>`;
-      }
-
-      function generateGridGame2(title, gridId) {
-        const labels = ["A", "B", "C", "D"];
-
-        return `
-        <div class="card">
-          <h2>${title}</h2>
-          <div class="grid-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Player</th>
-                  <th>H10</th><th>H11</th><th>H12</th><th>H13</th><th>H14</th>
-                  <th>H15</th><th>H16</th><th>H17</th><th>H18</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${labels.map((label, index) => `
-                  <tr>
-                    <td>${label}</td>
-                    ${[10,11,12,13,14,15,16,17,18].map(h => `
-                      <td>
-                        <input class="hole-input score-input"
-                               data-grid="${gridId}"
-                               data-player="${index+1}"
-                               data-hole="${h}"
-                               type="number">
-                      </td>
-                    `).join("")}
-                    <td class="total-cell" id="${gridId}_p${index+1}_total">0</td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          </div>
-        </div>`;
-      }
-    </script>
-
     <div id="grids"></div>
-
-    <script>
-      document.getElementById("grids").innerHTML =
-        generateGrid("Game 1", "g1") +
-        generateGridGame2("Game 2", "g2") +
-        generateGrid("Game 3", "g3");
-    </script>
 
     <div class="submit-row">
       <button type="submit">Submit</button>
@@ -228,6 +145,88 @@
 
   </form>
 
+  <script>
+    function generateGrid(title, gridId) {
+      return `
+      <div class="card">
+        <h2>${title}</h2>
+        <div class="grid-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>H1</th><th>H2</th><th>H3</th><th>H4</th><th>H5</th>
+                <th>H6</th><th>H7</th><th>H8</th><th>H9</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${[1,2,3,4].map(p => `
+                <tr>
+                  <td></td>
+                  ${[1,2,3,4,5,6,7,8,9].map(h => `
+                    <td>
+                      <input class="hole-input score-input"
+                             data-grid="${gridId}"
+                             data-player="${p}"
+                             data-hole="${h}"
+                             type="number">
+                    </td>
+                  `).join("")}
+                  <td class="total-cell" id="${gridId}_p${p}_total">0</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+    }
+
+    function generateGridGame2(title, gridId) {
+      const labels = ["A", "B", "C", "D"];
+
+      return `
+      <div class="card">
+        <h2>${title}</h2>
+        <div class="grid-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>H10</th><th>H11</th><th>H12</th><th>H13</th><th>H14</th>
+                <th>H15</th><th>H16</th><th>H17</th><th>H18</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${labels.map((label, index) => `
+                <tr>
+                  <td>${label}</td>
+                  ${[10,11,12,13,14,15,16,17,18].map(h => `
+                    <td>
+                      <input class="hole-input score-input"
+                             data-grid="${gridId}"
+                             data-player="${index+1}"
+                             data-hole="${h}"
+                             type="number">
+                    </td>
+                  `).join("")}
+                  <td class="total-cell" id="${gridId}_p${index+1}_total">0</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+    }
+
+    document.getElementById("grids").innerHTML =
+      generateGrid("Game 1", "g1") +
+      generateGridGame2("Game 2", "g2") +
+      generateGrid("Game 3", "g3");
+  </script>
+
+  <!-- ⭐ ALL SCRIPT MOVED TO BOTTOM (Option A) ⭐ -->
   <script>
     document.addEventListener("input", function (e) {
       if (!e.target.classList.contains("score-input")) return;
