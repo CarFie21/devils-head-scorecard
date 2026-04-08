@@ -180,17 +180,19 @@ document.getElementById("scoreForm").addEventListener("submit", async e => {
   const team = document.getElementById("teamNumber").value;
   const filename = `${day}_Team_${team}.csv`;
 
-  try {
-    await fetch("http://10.0.0.27:3000/upload", {   // <-- YOUR IP
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filename, csv })
-    });
+  
+     try {
+  await fetch("http://10.0.0.27:3000/upload", {   // <-- YOUR IP
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filename, csv })
+  });
 
-    status.textContent = "Submitted!";
-  } catch (err) {
-    status.textContent = "Error submitting";
-  }
+  status.textContent = "Submitted!";
+} catch (err) {
+  status.textContent = "Error submitting";
+}
+
 
   btn.disabled = false;
 });
