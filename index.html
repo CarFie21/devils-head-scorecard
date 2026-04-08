@@ -28,25 +28,15 @@
 <body>
   <h1>Devils Head Scorecard</h1>
 
-  <form id="scoreForm" class="score-form" autocomplete="off">
+  <form id="scoreForm" autocomplete="off">
     <div class="controls">
-      <div class="card" aria-labelledby="chooseDayLabel1">
-        <label id="chooseDayLabel1" for="daySelect1">Choose Day</label>
+
+      <div class="card">
+        <label for="daySelect1">Choose Day</label>
         <select id="daySelect1" name="daySelect1" required>
           <option value="">Select Day</option>
           <option value="Friday">Friday</option>
           <option value="Saturday">Saturday</option>
-        </select>
-      </div>
-
-      <div class="card" aria-labelledby="chooseDayLabel2">
-        <label id="chooseDayLabel2" for="daySelect2">Choose Day</label>
-        <select id="daySelect2" name="daySelect2" required>
-          <option value="">Select</option>
-          <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-          <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-          <option value="7">7</option><option value="8">8</option><option value="9">9</option>
-          <option value="10">10</option>
         </select>
       </div>
 
@@ -60,250 +50,151 @@
           <option value="10">10</option>
         </select>
       </div>
+
     </div>
 
     <div id="grids"></div>
 
     <div class="submit-row">
-      <button id="submitBtn" type="submit">Submit & Create CSV</button>
+      <button id="submitBtn" type="submit">Submit Scores</button>
       <div id="status" class="status">Ready</div>
     </div>
   </form>
 
-  <script>
-  // ====== Configuration ======
-  const webhookUrl = "https://hook.us2.make.com/rlnohhnoz8b06qiqrgyc718kx1kxxfbv"; // your Make webhook
-  const SECRET_TOKEN = ""; // optional: set a token and validate in Make
-
-  // ====== Helpers ======
-  function createGrid9(title, gridId, playerLabels = ["P1","P2","P3","P4"]) {
-    return `
-      <div class="card" id="${gridId}_card">
-        <h2 style="font-size:16px;margin:0 0 8px">${title}</h2>
-        <div class="grid-wrapper">
-          <table aria-labelledby="${gridId}_label">
-            <thead>
+<script>
+/* ===========================
+   GRID BUILDER
+=========================== */
+function createGameGrid(title, gridId, holes, rowLabels = null) {
+  return `
+    <div class="card">
+      <h2 style="font-size:16px;margin:0 0 8px">${title}</h2>
+      <div class="grid-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Player</th>
+              ${holes.map(h => `<th>H${h}</th>`).join("")}
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${[1,2,3,4].map(p => `
               <tr>
-                <th>Player</th>
-                <th>H1</th><th>H2</th><th>H3</th><th>H4</th><th>H5</th>
-                <th>H6</th><th>H7</th><th>H8</th><th>H9</th>
-                <th>Total</th>
+                <td style="text-align:left;padding-left:8px;font-weight:600">
+                  ${rowLabels ? rowLabels[p-1] : ""}
+                </td>
+                ${holes.map(h => `
+                  <td>
+                    <input class="hole-input score-input"
+                      data-grid="${gridId}"
+                      data-player="${p}"
+                      data-hole="${h}"
+                      type="number" min="0" inputmode="numeric">
+                  </td>
+                `).join("")}
+                <td class="total-cell" id="${gridId}_p${p}_total">0</td>
               </tr>
-            </thead>
-            <tbody>
-              ${playerLabels.map((pl, idx) => `
-                <tr>
-                  <td style="text-align:left;padding-left:8px;font-weight:600">${pl}</td>
-                  ${[1,2,3,4,5,6,7,8,9].map(h => `
-                    <td><input class="hole-input score-input" data-grid="${gridId}" data-player="${idx+1}" data-hole="${h}" type="number" min="0" inputmode="numeric" /></td>
-                  `).join('')}
-                  <td class="total-cell" id="${gridId}_p${idx+1}_total">0</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
+            `).join("")}
+          </tbody>
+        </table>
       </div>
-    `;
-  }
+    </div>
+  `;
+}
 
-  function createGrid10to18(title, gridId, playerLabels = ["A","B","C","D"]) {
-    return `
-      <div class="card" id="${gridId}_card">
-        <h2 style="font-size:16px;margin:0 0 8px">${title}</h2>
-        <div class="grid-wrapper">
-          <table aria-labelledby="${gridId}_label">
-            <thead>
-              <tr>
-                <th>Player</th>
-                <th>H10</th><th>H11</th><th>H12</th><th>H13</th><th>H14</th>
-                <th>H15</th><th>H16</th><th>H17</th><th>H18</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${playerLabels.map((pl, idx) => `
-                <tr>
-                  <td style="text-align:left;padding-left:8px;font-weight:600">${pl}</td>
-                  ${[10,11,12,13,14,15,16,17,18].map(h => `
-                    <td><input class="hole-input score-input" data-grid="${gridId}" data-player="${idx+1}" data-hole="${h}" type="number" min="0" inputmode="numeric" /></td>
-                  `).join('')}
-                  <td class="total-cell" id="${gridId}_p${idx+1}_total">0</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    `;
-  }
+/* ===========================
+   INSERT ALL THREE GAMES
+=========================== */
+document.getElementById("grids").innerHTML = `
+  ${createGameGrid("Game 1", "game1", [1,2,3,4,5,6,7,8,9])}
+  ${createGameGrid("Game 2", "game2", [10,11,12,13,14,15,16,17,18], ["A","B","C","D"])}
+  ${createGameGrid("Game 3", "game3", [1,2,3,4,5,6,7,8,9])}
+`;
 
-  // Insert grids
-  document.getElementById('grids').innerHTML =
-    createGrid9("Game 1 (H1–H9)", "g1", ["P1","P2","P3","P4"]) +
-    createGrid10to18("Game 2 (H10–H18)", "g2", ["A","B","C","D"]) +
-    createGrid9("Game 3 (H1–H9)", "g3", ["P1","P2","P3","P4"]);
+/* ===========================
+   AUTO TOTALS
+=========================== */
+function recalcTotals() {
+  const totals = {};
 
-  // Recalculate totals when inputs change
-  function recalcTotal(grid, player) {
-    const inputs = Array.from(document.querySelectorAll(`[data-grid="${grid}"][data-player="${player}"]`));
-    let sum = 0;
-    inputs.forEach(i => {
-      const v = i.value.trim();
-      if (v !== "" && !isNaN(v)) sum += Number(v);
-    });
-    const el = document.getElementById(`${grid}_p${player}_total`);
-    if (el) el.textContent = sum || 0;
-  }
-
-  document.addEventListener('input', (e) => {
-    if (!e.target.classList.contains('score-input')) return;
-    const grid = e.target.dataset.grid;
-    const player = e.target.dataset.player;
-    recalcTotal(grid, player);
+  document.querySelectorAll(".score-input").forEach(input => {
+    const key = `${input.dataset.grid}_p${input.dataset.player}`;
+    totals[key] = (totals[key] || 0) + Number(input.value || 0);
   });
 
-  // Build payload for Make
-  function buildPayload() {
-    const day1 = document.getElementById('daySelect1').value || "";
-    const day2 = document.getElementById('daySelect2').value || "";
-    const team = document.getElementById('teamNumber').value || "";
-    const filename = `${day1 || 'Day'}_Team${team || 'X'}.csv`;
-
-    const payload = {
-      filename: filename,
-      secret: SECRET_TOKEN || undefined,
-      meta: { day1, day2, team, submittedAt: new Date().toISOString() },
-      grids: []
-    };
-
-    const grids = [
-      { id: 'g1', holes: [1,2,3,4,5,6,7,8,9] },
-      { id: 'g2', holes: [10,11,12,13,14,15,16,17,18] },
-      { id: 'g3', holes: [1,2,3,4,5,6,7,8,9] }
-    ];
-
-    grids.forEach(g => {
-      for (let p = 1; p <= 4; p++) {
-        const row = { grid: g.id, player: `P${p}`, holes: {} };
-        g.holes.forEach(h => {
-          const el = document.querySelector(`[data-grid="${g.id}"][data-player="${p}"][data-hole="${h}"]`);
-          row.holes[h] = el?.value?.trim() || "";
-        });
-        payload.grids.push(row);
-      }
-    });
-
-    return payload;
-  }
-
-  // POST to Make and handle response
-  async function postToMake(payload) {
-    const statusEl = document.getElementById('status');
-    statusEl.textContent = 'Sending...';
-    const resp = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!resp.ok) {
-      const text = await resp.text().catch(()=>null);
-      throw new Error('Network error: ' + resp.status + (text ? ' - ' + text : ''));
-    }
-    // Expect JSON response from Make scenario
-    return resp.json().catch(()=>({}));
-  }
-
-  // Download helpers
-  function downloadTextAsCsv(filename, text, addBom = true) {
-    const bom = addBom ? '\uFEFF' : '';
-    const blob = new Blob([bom + text], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  function downloadBase64File(filename, base64, mime = 'text/csv') {
-    const byteChars = atob(base64);
-    const byteNumbers = new Array(byteChars.length);
-    for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: mime + ';charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  // Submit handler
-  document.getElementById('scoreForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const submitBtn = document.getElementById('submitBtn');
-    const statusEl = document.getElementById('status');
-
-    // Basic validation
-    const day1 = document.getElementById('daySelect1').value;
-    const day2 = document.getElementById('daySelect2').value;
-    const team = document.getElementById('teamNumber').value;
-    if (!day1 || !day2 || !team) {
-      statusEl.textContent = 'Please select both Choose Day fields and Team Number.';
-      return;
-    }
-
-    submitBtn.disabled = true;
-    statusEl.textContent = 'Preparing payload...';
-
-    try {
-      const payload = buildPayload();
-      statusEl.textContent = 'Sending to Make...';
-      const result = await postToMake(payload);
-
-      // Pattern A: Make returns a download URL (Drive link)
-      if (result.downloadUrl) {
-        statusEl.textContent = 'File created. Opening download link...';
-        // open in new tab; user can download from Drive UI
-        window.open(result.downloadUrl, '_blank');
-        submitBtn.disabled = false;
-        statusEl.textContent = 'Done. File available via link.';
-        return;
-      }
-
-      // Pattern B: Make returns raw CSV text
-      if (result.csvText) {
-        const filename = result.filename || payload.filename;
-        downloadTextAsCsv(filename, result.csvText, true);
-        statusEl.textContent = 'CSV downloaded.';
-        submitBtn.disabled = false;
-        return;
-      }
-
-      // Pattern C: Make returns base64 file
-      if (result.fileBase64) {
-        const filename = result.filename || payload.filename;
-        downloadBase64File(filename, result.fileBase64, 'text/csv');
-        statusEl.textContent = 'CSV downloaded.';
-        submitBtn.disabled = false;
-        return;
-      }
-
-      // Fallback
-      statusEl.textContent = 'Submission sent. Check Make scenario logs for file creation.';
-      submitBtn.disabled = false;
-    } catch (err) {
-      console.error(err);
-      statusEl.textContent = 'Error: ' + (err.message || 'Submission failed');
-      submitBtn.disabled = false;
-    }
+  Object.keys(totals).forEach(key => {
+    const el = document.getElementById(`${key}_total`);
+    if (el) el.textContent = totals[key];
   });
-  </script>
+}
+
+document.querySelectorAll(".score-input").forEach(i =>
+  i.addEventListener("input", recalcTotals)
+);
+
+/* ===========================
+   CSV BUILDER
+=========================== */
+function buildCSV() {
+  const day = document.getElementById("daySelect1").value;
+  const team = document.getElementById("teamNumber").value;
+
+  const rows = [];
+  rows.push(["Day", day]);
+  rows.push(["Team", team]);
+
+  function extract(gridId, holes) {
+    for (let p = 1; p <= 4; p++) {
+      const row = holes.map(h => {
+        const cell = document.querySelector(
+          `input[data-grid="${gridId}"][data-player="${p}"][data-hole="${h}"]`
+        );
+        return cell ? (cell.value || "") : "";
+      });
+      rows.push(row);
+    }
+  }
+
+  extract("game1", [1,2,3,4,5,6,7,8,9]);
+  extract("game2", [10,11,12,13,14,15,16,17,18]);
+  extract("game3", [1,2,3,4,5,6,7,8,9]);
+
+  return rows.map(r => r.join(",")).join("\n");
+}
+
+/* ===========================
+   SUBMIT TO NODE SERVER
+=========================== */
+document.getElementById("scoreForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const status = document.getElementById("status");
+  const btn = document.getElementById("submitBtn");
+
+  btn.disabled = true;
+  status.textContent = "Submitting...";
+
+  const csv = buildCSV();
+  const day = document.getElementById("daySelect1").value;
+  const team = document.getElementById("teamNumber").value;
+  const filename = `${day}_Team_${team}.csv`;
+
+  try {
+    await fetch("http://10.0.0.27:3000/upload", {   // <-- YOUR IP
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filename, csv })
+    });
+
+    status.textContent = "Submitted!";
+  } catch (err) {
+    status.textContent = "Error submitting";
+  }
+
+  btn.disabled = false;
+});
+</script>
+
 </body>
 </html>
